@@ -7,7 +7,9 @@ const CONFIG = {
         empty: 'Пожалуйста, введите пароль',
         success: 'Верно.',
         error: 'Неверно.'
-    }
+    },
+    // Ссылка подсказки, показываемая при неверном пароле
+    hintUrl: 'https://ru.wikipedia.org/wiki/Дицентра'
 };
 
 class PasswordValidator {
@@ -48,7 +50,9 @@ class PasswordValidator {
             this.redirectToTarget();
             return true;
         } else {
+            // Показываем сообщение об ошибке и подсказку (ссылка)
             this.showMessage(this.config.messages.error, 'error');
+            this.showHint();
             this.resetForm();
             return false;
         }
@@ -61,12 +65,25 @@ class PasswordValidator {
     }
     
     showMessage(text, type) {
+        // Используем textContent для безопасного текста
         this.messageElement.textContent = text;
         this.messageElement.className = type;
     }
     
+    showHint() {
+        // Добавляем ссылку с текстом "Подсказка." после текущего сообщения
+        // Используем innerHTML только здесь, содержимое ссылки известно и безопасно
+        const hintLink = `<a href="${this.config.hintUrl}" target="_blank" rel="noopener">Подсказка.</a>`;
+        // Если уже есть текст внутри, добавим пробел перед ссылкой
+        if (this.messageElement.innerHTML) {
+            this.messageElement.innerHTML = this.messageElement.innerHTML + ' ' + hintLink;
+        } else {
+            this.messageElement.innerHTML = hintLink;
+        }
+    }
+    
     clearMessage() {
-        if (this.messageElement.textContent) {
+        if (this.messageElement.textContent || this.messageElement.innerHTML) {
             this.messageElement.textContent = '';
             this.messageElement.className = '';
         }
