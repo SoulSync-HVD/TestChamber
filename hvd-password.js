@@ -18,6 +18,7 @@ class PasswordValidator {
         this.form = document.getElementById('passwordForm');
         this.passwordInput = document.getElementById('password');
         this.messageElement = document.getElementById('message');
+        this.hintElement = null; // контейнер для подсказки
         
         this.init();
     }
@@ -71,21 +72,45 @@ class PasswordValidator {
     }
     
     showHint() {
-        // Добавляем ссылку с текстом "Подсказка." после текущего сообщения
-        // Используем innerHTML только здесь, содержимое ссылки известно и безопасно
-        const hintLink = `<a href="${this.config.hintUrl}" target="_blank" rel="noopener">Подсказка.</a>`;
-        // Если уже есть текст внутри, добавим пробел перед ссылкой
-        if (this.messageElement.innerHTML) {
-            this.messageElement.innerHTML = this.messageElement.innerHTML + ' ' + hintLink;
-        } else {
-            this.messageElement.innerHTML = hintLink;
+        // Удаляем старую подсказку, если она есть
+        if (this.hintElement && this.hintElement.parentNode) {
+            this.hintElement.remove();
+            this.hintElement = null;
         }
+
+        // Создаём блок под подсказку и стиль делаем инлайн, чтобы не зависеть от CSS
+        const hintDiv = document.createElement('div');
+        hintDiv.style.display = 'block';
+        hintDiv.style.color = '#fff';
+        hintDiv.style.marginTop = '6px';
+
+        const hintLink = document.createElement('a');
+        hintLink.href = this.config.hintUrl;
+        hintLink.target = '_blank';
+        hintLink.rel = 'noopener';
+        hintLink.textContent = 'Подсказка.';
+        // Ссылка белого цвета
+        hintLink.style.color = '#fff';
+        // Сохраним стандартное подчёркивание, но можно убрать если нужно
+        hintLink.style.textDecoration = 'underline';
+
+        hintDiv.appendChild(hintLink);
+
+        // Добавляем подсказку как следующий блок внутри messageElement
+        this.messageElement.appendChild(hintDiv);
+        this.hintElement = hintDiv;
     }
     
     clearMessage() {
-        if (this.messageElement.textContent || this.messageElement.innerHTML) {
+        // Очистим основной текст и класс
+        if (this.messageElement) {
             this.messageElement.textContent = '';
             this.messageElement.className = '';
+        }
+        // Удалим подсказку, если была
+        if (this.hintElement && this.hintElement.parentNode) {
+            this.hintElement.remove();
+            this.hintElement = null;
         }
     }
     
